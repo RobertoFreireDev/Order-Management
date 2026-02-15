@@ -11,10 +11,10 @@ flowchart TD
     subgraph Order_Management [Order Management]
         A[Customer Places Order] --> B{Check Inventory<br/>Availability}
         B -->|Out of Stock| C([Reject Order])
-        B --> D[Reserve/Lock Inventory and<br/>Create Order Record]
+        B --> D[Reserve/Lock Inventory <br/>Create Order Record]
         
         D --> |"Credit/Debit/Tokenized"| E{Authorize/Confirm<br/>Payment}
-        E -->|Failed| F([Release Inventory and<br/>Update Status: Payment Failed])
+        E -->|Failed| F([Release Inventory<br/>Update Status: <br/>Payment Failed])
         E -->|Authorized| G[Update Order Status:<br/>Confirmed]
         
         N[Update Order Status:<br/>Shipped]
@@ -48,7 +48,7 @@ flowchart TD
 
     %% Logic to Events
     G --> H
-    D --> |"Cash on Delivery / In Person"| H
+    D --> |"Cash on Delivery/<br/>In Person"| H
     
     %% Event Distribution
     H --> I
@@ -56,8 +56,8 @@ flowchart TD
     
     %% Fulfillment Flow
     K --> L
-    L --> |"Credit Card / Tokenized"| V
-    L --> |"Debit / Cash / In Person"| M
+    L --> |"Credit Card/<br/>Tokenized"| V
+    L --> |"Debit/Cash/<br/>In Person"| M
     V --> M
     
     %% Invoice & Shipping Flow
@@ -69,8 +69,8 @@ flowchart TD
     %% Final Updates
     P --> O
     P --> N
-    P --> |"Cash on Delivery / In Person"| Q
-    P --> |"Credit / Debit / Tokenized"| W
+    P --> |"Cash on Delivery/<br/>In Person"| Q
+    P --> |"Credit/Debit/<br/>Tokenized"| W
     Q --> W
     W --> R
 
