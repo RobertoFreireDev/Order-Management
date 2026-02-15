@@ -1,7 +1,7 @@
 # Order-Management
 
 ```mermaid
-flowchart LR
+flowchart TD
     %% Subgraph Styling
     classDef event fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
     classDef logic fill:#f5f5f5,stroke:#333,stroke-width:1px;
@@ -9,37 +9,37 @@ flowchart LR
     classDef note fill:#f9fbe7,stroke:#827717,stroke-width:1px;
 
     subgraph Order_Management [Order Management]
-        A[Customer Places Order] --> B{Check Inventory Availability}
+        A[Customer Places Order] --> B{Check Inventory<br/>Availability}
         B -->|Out of Stock| C([Reject Order])
-        B --> D[Reserve/Lock Inventory and Create Order Record]
+        B --> D[Reserve/Lock Inventory and<br/>Create Order Record]
         
-        D --> |"Credit/Debit/Tokenized"| E{Authorize/Confirm Payment}
-        E -->|Failed| F([Release Inventory and Update Status: Payment Failed])
-        E -->|Authorized| G[Update Order Status: Confirmed]
+        D --> |"Credit/Debit/Tokenized"| E{Authorize/Confirm<br/>Payment}
+        E -->|Failed| F([Release Inventory and<br/>Update Status: Payment Failed])
+        E -->|Authorized| G[Update Order Status:<br/>Confirmed]
         
-        N[Update Order Status: Shipped]
-        R[Update Order Status: Delivered]
+        N[Update Order Status:<br/>Shipped]
+        R[Update Order Status:<br/>Delivered]
     end
 
     subgraph Events [Events / Message Bus]
-        H([Send event: Order placed])
-        M([Send event: Order Ready])
-        S([Send event: Invoice created])
-        P([Send event: Order shipped])
-        W([Send event: Order Completed])
+        H([Send event:<br/>Order placed])
+        M([Send event:<br/>Order Ready])
+        S([Send event:<br/>Invoice created])
+        P([Send event:<br/>Order shipped])
+        W([Send event:<br/>Order Completed])
     end
 
     subgraph Fulfillment [FULFILLMENT]
-        K[Store order in Fulfillment Center]
-        L[Pick Items, Quality Check, Pack Order and Create Shipping Label]
+        K[Store order in<br/>Fulfillment Center]
+        L[Pick Items, Quality Check,<br/>Pack Order and Create<br/>Shipping Label]
         V[Capture Payment]
         U[Ship order]
         Q[Confirm Payment]
     end
 
     subgraph Email [Email]
-        I[Send order placed e-mail]
-        O[Send order shipped e-mail]
+        I[Send order placed<br/>e-mail]
+        O[Send order shipped<br/>e-mail]
     end
 
     subgraph Invoice [Invoice]
