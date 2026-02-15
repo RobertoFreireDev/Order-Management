@@ -3,6 +3,14 @@
 ```mermaid
 flowchart TD
 
+    subgraph Events [Events / Message Bus]
+        H(Send event: Order placed)
+        M(Send event: Order Ready)
+        S(Send event: Invoice created)
+        P(Send event: Order shipped)
+        W(Send event: Order Completed)
+    end
+
     subgraph Order_Management [Order Management]
         A[Customer Places Order] --> B[Check Inventory Availability]
         B -->|Out of Stock| C[Reject Order]
@@ -10,7 +18,7 @@ flowchart TD
         D --> |Credit Card, Debit Card, Card on File Tokenized| E[Authorize/Confirm Payment]
         E -->|Failed| F[Release Inventory and Update Status: Payment Failed]
         E -->|Authorized| G[Update Order Status: Confirmed]
-        G --> H(Send event: Order placed)
+        G --> H
         D --> |Cash on Delivery or Payment in Person| H
         N[Update Order Status: Shipped]
         R[Update Order Status: Delivered]
@@ -25,19 +33,15 @@ flowchart TD
         K[Store order in Fulfillment Center]
         L[Pick Items, Quality Check, Pack Order and Create Shipping Label]
         V[Capture Payment]
-        M(Send event: Order Ready)
         U[Ship order]
-        P(Send event: Order shipped)
         Q[Confirm Payment]
-        W(Send event: Order Completed) 
     end
 
     subgraph Invoice [Invoice]
         J[Generate Invoice]
-        S(Send event: Invoice created)
     end
 
-    %% Connections between groups
+    %% Connections between groups and events
     H --> I
     H --> K
     K --> L
