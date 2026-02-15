@@ -26,11 +26,11 @@ M --> J[Generate Invoice]
 J --> S(Send event: Invoice created)
 S --> U[Ship order]
 U --> P(Send event: Order shipped)
-M --> N[Update Order Status: Shipped]
 %% =========================
 %% DELIVERY
 %% =========================
 P --> O[Send e-mail order shipped]
+P --> N[Update Order Status: Shipped]
 P --> |Cash on Delivery or Payment in Person| Q[Confirm Payment]
 P --> |Credit Card, Debit Card, Card on File Tokenized| R
 Q --> R[Update Order Status: Delivered]
