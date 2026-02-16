@@ -10,15 +10,21 @@ flowchart TD
     classDef order fill:#fff3e0,stroke:#ef6c00,stroke-width:1px;
     classDef note fill:#f9fbe7,stroke:#827717,stroke-width:1px;
 
+    subgraph Order_Payment [Order Payment]
+        D5[Authorize payment]
+    end
+
     subgraph Order_Creation [Order Management]
-        A[Customer Places Order] --> B{Reserve Inventory?}
-        B -->|Out of Stock| C[Return Reject Order]
-        B --> |Reserved| D[Save Order in database]
-        D --> D2{Payment type?}
+        A[Customer Places Order] --> A1[Save order in database]
+        A1 --> B{Reserve Inventory?}
+        B -->|Out of Stock| B1[Delete order in database]
+        B1 --> C[Return one or more items missing]
+        B --> B2[Order created]
+        B2 --> D2{Payment type?}
         D2--> |"Cash on Delivery/<br/>In Person"| D1[Order confirmed]       
-        D2 --> |"Credit/Debit/Tokenized"| D5[Authorize payment]
-        D5 --> D4[Return order created]
-        D2 --> |"Asynchronous Payments"| E1[Return payment page]
+        D5 --> |"Authorized"| D1
+        D5 --> |"Not authorized"| D6[Return payment failed]
+        D2 --> |"Asynchronous payment"| E1[Return payment page]
         D1--> D3[Return order confirmed]
     end
 
@@ -35,13 +41,14 @@ flowchart TD
     %% Logic to Events
     H --> I
     H1 --> I1
+    D2 --> |"Credit/Debit/Tokenized"| D5
     D1 --> H
-    D4 --> H1
+    B2 --> H1
 
     %% Class Assignments
     class H,H1 event;
     class B,D2 logic;
-    class A,C,D,D1,D3,E1,D4,D5 order;
+    class A,A1,B1,B2,C,D,D1,D3,E1,D4,D5,D6 order;
     class I,I1 note;
 ```
 
