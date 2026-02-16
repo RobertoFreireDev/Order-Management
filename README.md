@@ -11,11 +11,13 @@ flowchart TD
     classDef note fill:#f9fbe7,stroke:#827717,stroke-width:1px;
 
     subgraph Order_Creation [Order Creation]
-        A[Customer Places Order] --> B{Reserve Inventory}
-        B -->|Out of Stock| C[Reject Order]
-        B --> D[Save Order in database]
-        
-        D --> |"Credit/Debit/Tokenized"| E1[Return payment page]
+        A[Customer Places Order] --> B{Reserve Inventory?}
+        B -->|Out of Stock| C[Return Reject Order]
+        B --> |Reserved| D[Save Order in database]
+        D --> D1[Create Event]
+        D1 --> D2{Payment type?}
+        D2--> |"Cash on Delivery/<br/>In Person"| D3[Return order placed]
+        D2 --> |"Credit/Debit/Tokenized"| E1[Return payment page]
     end
 
     subgraph Events [Events / Message Bus]
@@ -23,16 +25,22 @@ flowchart TD
     end
 
     subgraph Email [Email]
-        I[Send e-mail: <br/>Order Created/<br/>Awaiting Payment]
+        I[Send e-mail: <br/>Order Created and<br/>Awaiting Payment]
     end
 
     %% Logic to Events
     H --> I
-    D --> |"Cash on Delivery/<br/>In Person"| H
+    D1 --> H
 
     %% Class Assignments
     class H event;
 ```
+
+### Notes:
+
+1 - Reserve/Lock Inventory:
+
+- It should be an atomic operation at database level to avoid race conditions between multiple users in the same or on different application instances on the server/cloud.
 
 ## Order Payment
 
@@ -46,9 +54,12 @@ flowchart TD
 
     subgraph Order_Payment [Order Payment]
         A1[Pay Order] --> |"Credit/Debit/Tokenized"| E{Authorize Payment}
-        E -->|Expired| F[Release Inventory<br/>Update Order Status]
         E -->|Authorized| G[Update Order Status]
-        E -->|Failed| G1[Return Payment Failed]
+        E -->|Failed| G1[Return Payment Failed/<br/>Try again]
+    end
+
+    subgraph Order_Payment_Background_Job [Background Job]
+        A2[Order Expired] --> |Expired| F[Release Inventory<br/>Update Order Status]
     end
 
     subgraph Events [Events / Message Bus]
@@ -79,15 +90,11 @@ flowchart TD
 
 ### Notes:
 
-1 - Reserve/Lock Inventory:
-
-- It should be an atomic operation at database level to avoid race conditions
-
-2 - Order Status:
+1 - Order Status:
 
 - It should have 2 status columns: Order Status and Payment Status.
 
-2.1 - Digital Payment Flow
+1.1 - Digital Payment Flow
 
 | Order Status       | Payment Status     | Trigger / Event                                                                 |
 |--------------------|--------------------|----------------------------------------------------------------------------------|
@@ -100,7 +107,7 @@ flowchart TD
 
 ---
 
-2.2 - Order Lifecycle – Cash / Pay-on-Delivery Flow
+1.2 - Order Lifecycle – Cash / Pay-on-Delivery Flow
 
 | Order Status       | Payment Status | Trigger / Event                                                      |
 |--------------------|---------------|----------------------------------------------------------------------|
