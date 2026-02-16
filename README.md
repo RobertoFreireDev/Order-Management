@@ -61,14 +61,14 @@ flowchart TD
 
 ![Transactional outbox pattern](imgs/outboxpattern.png)
 
-## Order Payment
-
-### Synchronous/Async payment methods:
+3 - Synchronous/Async payment methods:
 
 - Direct authorization via http request
 - Authorize payment request via webhook or polling.
 
 ![Webhook vs polling](imgs/webhookpolling.png)
+
+## Order Payment
 
 ```mermaid
 flowchart TD
@@ -82,6 +82,7 @@ flowchart TD
         A1[Authorize payment] --> E{Payment authorized? Call to payment gateway}
         E -->|Failed| G1[Return payment failed]
         E -->|Authorized| E1[Authorized]
+        E1 --> E4[Save payment authorized for OrderId]
         E -->|External timeout| E3[Return payment expired]
         E1 --> E2[Return payment authorized]
     end
@@ -103,7 +104,7 @@ flowchart TD
     %% Class Assignments
     class H,H1,H2,H3 event;
     class E,B logic;
-    class A1,C,C1,E1,E2,E3,G,G1,A2,F order;
+    class A1,C,C1,E1,E2,E3,E4,G,G1,A2,F order;
     class I,I1,I2 note;
 ```
 
