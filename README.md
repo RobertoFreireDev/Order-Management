@@ -52,7 +52,7 @@ flowchart TD
 
 2 - Transactional outbox pattern
 
-- Save Order in databas and Order created (outbox message) to the same database in a single transaction. A separate, decoupled process reads from the outbox table and publishes to a message broker and then it deletes the current outbox message. 
+- Save both order details and order created (outbox message) to the same database in a single transaction. A separate and decoupled process reads from the outbox table and publishes to a message broker and then it deletes the current outbox message. Still has a very small chance to not be able to delete outbox message and send more than 1 order created event to message bus. Need to implement Idempotency on the consumer side.
 
 ![Transactional outbox pattern](imgs/outboxpattern.png)
 
