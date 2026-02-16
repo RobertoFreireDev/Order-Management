@@ -15,11 +15,10 @@ flowchart TD
     end
 
     subgraph Order_Creation [Order Management]
-        A[Customer Places Order] --> A1[Save order in database]
+        A[Customer Places Order] --> A1[Start create order transaction]
         A1 --> B{Reserve Inventory?}
-        B -->|Out of Stock| B1[Delete order in database]
-        B1 --> C[Return one or more items missing]
-        B --> B2[Order created]
+        B -->|Out of Stock| C[Return one or more items missing]
+        B --> B2[Commit create order in database]
         B2 --> D2{Payment type?}
         D2--> |"Cash on Delivery/<br/>In Person"| D1[Order confirmed]       
         D5 --> |"Authorized"| D1
