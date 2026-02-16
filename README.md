@@ -17,7 +17,7 @@ flowchart TD
         
         D --> |"Credit/Debit/Tokenized"| E{Authorize/Confirm<br/>Payment}
         E -->|Failed| F([Release Inventory<br/>Update Status: <br/>Payment Failed])
-        E -->|Authorized| G[Update Order Status:<br/>Confirmed]
+        E -->|Authorized| G[Update Order Status]
     end
 
     subgraph Events [Events / Message Bus]
@@ -134,8 +134,8 @@ flowchart TD
     end
 
     subgraph Order_Management [Order Management]
-        N[Update Order Status:<br/>Shipped]
-        R[Update Order Status:<br/>Delivered]
+        N[Update Order Status]
+        R[Update Order Status]
     end
 
     subgraph Email [Email]
