@@ -14,29 +14,34 @@ flowchart TD
         A[Customer Places Order] --> B{Reserve Inventory?}
         B -->|Out of Stock| C[Return Reject Order]
         B --> |Reserved| D[Save Order in database]
-        D --> D1[Create Event]
-        D1 --> D2{Payment type?}
-        D2--> |"Cash on Delivery/<br/>In Person"| D3[Return order placed]
-        D2 --> |"Credit/Debit/Tokenized"| E1[Return payment page]
+        D --> D2{Payment type?}
+        D2--> |"Cash on Delivery/<br/>In Person"| D1[Order confirmed]       
+        D2 --> |"Credit/Debit/Tokenized"| D4[Order created]
+        D1--> D3[Return order confirmed]        
+        D4 --> E1[Return payment page]
     end
 
     subgraph Events [Events / Message Bus]
-        H([Send event:<br/>Order placed])
+        H([Send event:<br/>Order confirmed])
+        H1([Send event:<br/>Order created])
     end
 
     subgraph Email [Email]
-        I[Send e-mail: <br/>Order Created and<br/>Awaiting Payment]
+        I[Send e-mail: <br/>Order Confirmed]
+        I1[Send e-mail: <br/>Order Created and<br/>Awaiting Payment]
     end
 
     %% Logic to Events
     H --> I
+    H1 --> I1
     D1 --> H
+    D4 --> H1
 
     %% Class Assignments
-    class H event;
+    class H,H1 event;
     class B,D2 logic;
-    class A,C,D,D1,D3,E1 order;
-    class I note;
+    class A,C,D,D1,D3,E1,D4 order;
+    class I,I1 note;
 ```
 
 ### Notes:
@@ -47,7 +52,7 @@ flowchart TD
 
 2 - Transactional outbox pattern
 
-- Save Order in databas and Order placed (outbox message) to the same database in a single transaction. A separate, decoupled process reads from the outbox table and publishes to a message broker and then it deletes the current outbox message. 
+- Save Order in databas and Order created (outbox message) to the same database in a single transaction. A separate, decoupled process reads from the outbox table and publishes to a message broker and then it deletes the current outbox message. 
 
 ![Transactional outbox pattern](imgs/outboxpattern.png)
 
@@ -63,8 +68,11 @@ flowchart TD
 
     subgraph Order_Payment [Order Payment]
         A1[Pay Order] --> |"Credit/Debit/Tokenized"| E{Authorize Payment}
-        E -->|Authorized| G[Update Order Status]
         E -->|Failed| G1[Return Payment Failed/<br/>Try again]
+    end
+
+    subgraph Order_Creation [Order Creation]
+        G[Update Order Status]
     end
 
     subgraph Order_Payment_Background_Job [Background Job]
@@ -72,9 +80,10 @@ flowchart TD
     end
 
     subgraph Events [Events / Message Bus]
-        H([Send event:<br/>Order placed])
+        H([Send event:<br/>Payment authorized])
         H1([Send event:<br/>Payment failed])
         H2([Send event:<br/>Payment expired])
+        H3([Send event:<br/>Order confirmed])
     end
 
     subgraph Email [Email]
@@ -84,17 +93,19 @@ flowchart TD
     end
 
     %% Logic to Events
-    G --> H
     F --> H2
     G1 --> H1
     
     %% Event Distribution
+    E -->|Authorized| H
     H --> I
+    H --> G
+    G --> H3
     H1 --> I1
     H2 --> I2
 
     %% Class Assignments
-    class H,H1,H2 event;
+    class H,H1,H2,H3 event;
     class E logic;
     class A1,G,G1,A2,F order;
     class I,I1,I2 note;
@@ -123,7 +134,7 @@ flowchart TD
 
 | Order Status       | Payment Status | Trigger / Event                                                      |
 |--------------------|---------------|----------------------------------------------------------------------|
-| Confirmed          | Pending       | Order placed; no digital payment needed to start fulfillment.      |
+| Confirmed          | Pending       | Order confirmed; no digital payment needed to start fulfillment.      |
 | Out for Delivery   | Pending       | Logistics has the package; payment expected at delivery.           |
 | Completed          | Paid          | Delivery person confirms receipt of cash/card in person.           |
 | Canceled           | Unpaid        | Customer refused delivery or was not found at the address.         |
@@ -144,7 +155,7 @@ flowchart TD
     end
 
     subgraph Events [Events / Message Bus]
-        H([Event:<br/>Order placed])
+        H([Event:<br/>Order Confirmed])
         M([Send event:<br/>Order Ready])
         S([Send event:<br/>Invoice created])
     end
