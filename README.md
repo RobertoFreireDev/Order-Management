@@ -16,9 +16,10 @@ flowchart TD
         B --> |Reserved| D[Save Order in database]
         D --> D2{Payment type?}
         D2--> |"Cash on Delivery/<br/>In Person"| D1[Order confirmed]       
-        D2 --> |"Credit/Debit/Tokenized"| D4[Order created]
-        D1--> D3[Return order confirmed]        
-        D4 --> E1[Return payment page]
+        D2 --> |"Credit/Debit/Tokenized"| D5[Authorize payment]
+        D5 --> D4[Return order created]
+        D2 --> |"Asynchronous Payments"| E1[Return payment page]
+        D1--> D3[Return order confirmed]
     end
 
     subgraph Events [Events / Message Bus]
@@ -40,7 +41,7 @@ flowchart TD
     %% Class Assignments
     class H,H1 event;
     class B,D2 logic;
-    class A,C,D,D1,D3,E1,D4 order;
+    class A,C,D,D1,D3,E1,D4,D5 order;
     class I,I1 note;
 ```
 
@@ -56,7 +57,16 @@ flowchart TD
 
 ![Transactional outbox pattern](imgs/outboxpattern.png)
 
+3 - Asynchronous vs Synchronous Payments
+
+- Direct Authorization Http request to authorized during the Create Order request.
+- Deferred Confirmation: Authorized after the Create Order request via Webhook.
+
+![Webhook vs polling](imgs/webhookpolling.png)
+
 ## Order Payment
+
+- For Asynchronous or Synchronous Payment
 
 ```mermaid
 flowchart TD
@@ -67,7 +77,7 @@ flowchart TD
     classDef note fill:#f9fbe7,stroke:#827717,stroke-width:1px;
 
     subgraph Order_Payment [Order Payment]
-        A1[Pay Order] --> B{Valid and Credit/Debit/Tokenized?}
+        A1[Authorize payment] --> B{Valid and Credit/Debit/Tokenized?}
         B --> |"Yes"| E
         B --> |"Expired"| C[Return payment expired]
         B --> |"Invalid payment"| C1[Return invalid payment]
