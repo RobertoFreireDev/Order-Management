@@ -10,14 +10,45 @@ flowchart TD
     classDef fulfill fill:#fff3e0,stroke:#ef6c00,stroke-width:1px;
     classDef note fill:#f9fbe7,stroke:#827717,stroke-width:1px;
 
-    subgraph Order_Management [Order Management]
-        A[Customer Places Order] --> B{Reserve/Lock Inventory}
+    subgraph Order_Creation [Order Creation]
+        A[Customer Places Order] --> B{Reserve Inventory}
         B -->|Out of Stock| C[Reject Order]
-        B --> D[Create Order Record]
+        B --> D[Save Order in database]
         
-        D --> |"Credit/Debit/Tokenized"| E{Authorize/Confirm<br/>Payment}
+        D --> |"Credit/Debit/Tokenized"| E1[Return payment page]
+    end
+
+    subgraph Events [Events / Message Bus]
+        H([Send event:<br/>Order placed])
+    end
+
+    subgraph Email [Email]
+        I[Send e-mail: <br/>Order Created/<br/>Awaiting Payment]
+    end
+
+    %% Logic to Events
+    H --> I
+    D --> |"Cash on Delivery/<br/>In Person"| H
+
+    %% Class Assignments
+    class H event;
+```
+
+## Order Payment
+
+```mermaid
+flowchart TD
+    %% Subgraph Styling
+    classDef event fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
+    classDef logic fill:#f5f5f5,stroke:#333,stroke-width:1px;
+    classDef fulfill fill:#fff3e0,stroke:#ef6c00,stroke-width:1px;
+    classDef note fill:#f9fbe7,stroke:#827717,stroke-width:1px;
+
+    subgraph Order_Payment [Order Payment]
+        A1[Pay Order] --> |"Credit/Debit/Tokenized"| E{Authorize Payment}
         E -->|Expired| F[Release Inventory<br/>Update Order Status]
         E -->|Authorized| G[Update Order Status]
+        E -->|Failed| G1[Return Payment Failed]
     end
 
     subgraph Events [Events / Message Bus]
@@ -27,16 +58,15 @@ flowchart TD
     end
 
     subgraph Email [Email]
-        I[Send e-mail: <br/>Order Created/<br/>Awaiting Payment]
+        I[Send e-mail: <br/>Payment Authorized]
         I1[Send e-mail: <br/>Payment failed]
         I2[Send e-mail: <br/>Payment expired]
     end
 
     %% Logic to Events
     G --> H
-    F -->|Expired| H2
-    E -->|Failed| H1
-    D --> |"Cash on Delivery/<br/>In Person"| H
+    F --> H2
+    G1 --> H1
     
     %% Event Distribution
     H --> I
@@ -44,7 +74,7 @@ flowchart TD
     H2 --> I2
 
     %% Class Assignments
-    class H event;
+    class H,H1,H2 event;
 ```
 
 ### Notes:
