@@ -31,8 +31,8 @@ flowchart TD
     end
 
     subgraph Email [Email]
-        I[Send e-mail: <br/>Order Confirmed]
-        I1[Send e-mail: <br/>Order Created and<br/>Awaiting Payment]
+        I[Send e-mail: <br/>Order confirmed]
+        I1[Send e-mail: <br/>Order created and awaiting payment]
     end
 
     %% Logic to Events
@@ -123,8 +123,8 @@ flowchart TD
     end
 
     subgraph Events [Events / Message Bus]
-        H([Event:<br/>Order Confirmed])
-        M([Send event:<br/>Order Ready])
+        H([Event:<br/>Order confirmed])
+        M([Send event:<br/>Order ready])
         S([Send event:<br/>Invoice created])
     end
 
@@ -167,7 +167,7 @@ flowchart TD
     subgraph Events [Events / Message Bus]
         S([Event: Invoice created])
         P([Send event:<br/>Order shipped])
-        W([Send event:<br/>Order Completed])
+        W([Send event:<br/>Order completed])
     end
 
     subgraph Order_Management [Order Management]
