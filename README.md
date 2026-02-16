@@ -45,6 +45,12 @@ flowchart TD
 
 - It should be an atomic operation at database level to avoid race conditions between multiple users in the same or on different application instances on the server/cloud.
 
+2 - Transactional outbox pattern
+
+- Save Order in databas and Order placed (outbox message) to the same database in a single transaction. A separate, decoupled process reads/deletes from the outbox table and publishes to a message broker, ensuring consistency. 
+
+![Transactional outbox pattern](imgs/outboxpattern.png)
+
 ## Order Payment
 
 ```mermaid
