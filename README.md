@@ -12,28 +12,36 @@ flowchart TD
 
     subgraph Order_Management [Order Management]
         A[Customer Places Order] --> B{Reserve/Lock Inventory}
-        B -->|Out of Stock| C([Reject Order])
+        B -->|Out of Stock| C[Reject Order]
         B --> D[Create Order Record]
         
         D --> |"Credit/Debit/Tokenized"| E{Authorize/Confirm<br/>Payment}
-        E -->|Failed| F([Release Inventory<br/>Update Status: <br/>Payment Failed])
+        E -->|Expired| F[Release Inventory<br/>Update Order Status]
         E -->|Authorized| G[Update Order Status]
     end
 
     subgraph Events [Events / Message Bus]
         H([Send event:<br/>Order placed])
+        H1([Send event:<br/>Payment failed])
+        H2([Send event:<br/>Payment expired])
     end
 
     subgraph Email [Email]
-        I[Send order placed<br/>e-mail]
+        I[Send e-mail: <br/>Order Created/<br/>Awaiting Payment]
+        I1[Send e-mail: <br/>Payment failed]
+        I2[Send e-mail: <br/>Payment expired]
     end
 
     %% Logic to Events
     G --> H
+    F -->|Expired| H2
+    E -->|Failed| H1
     D --> |"Cash on Delivery/<br/>In Person"| H
     
     %% Event Distribution
     H --> I
+    H1 --> I1
+    H2 --> I2
 
     %% Class Assignments
     class H event;
@@ -70,7 +78,6 @@ flowchart TD
 | Out for Delivery   | Pending       | Logistics has the package; payment expected at delivery.           |
 | Completed          | Paid          | Delivery person confirms receipt of cash/card in person.           |
 | Canceled           | Unpaid        | Customer refused delivery or was not found at the address.         |
-
 
 ## Fulfillment
 
@@ -139,7 +146,7 @@ flowchart TD
     end
 
     subgraph Email [Email]
-        O[Send order shipped<br/>e-mail]
+        O[Send e-mail:<br/> Order shipped]
     end
 
     %% Shipping Flow
