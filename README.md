@@ -10,7 +10,7 @@ flowchart TD
     classDef order fill:#fff3e0,stroke:#ef6c00,stroke-width:1px;
     classDef note fill:#f9fbe7,stroke:#827717,stroke-width:1px;
 
-    subgraph Order_Creation [Order Creation]
+    subgraph Order_Creation [Order Management]
         A[Customer Places Order] --> B{Reserve Inventory?}
         B -->|Out of Stock| C[Return Reject Order]
         B --> |Reserved| D[Save Order in database]
@@ -75,7 +75,7 @@ flowchart TD
         E -->|Failed| G1[Return Payment Failed/<br/>Try again]
     end
 
-    subgraph Order_Creation [Order Creation]
+    subgraph Order_Creation [Order Management]
         G[Update Order Status]
     end
 
