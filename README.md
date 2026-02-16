@@ -160,7 +160,9 @@ flowchart TD
     classDef note fill:#f9fbe7,stroke:#827717,stroke-width:1px;
 
     subgraph Fulfillment [FULFILLMENT]
+        S1[Retrieve invoice]
         U[Ship order]
+        U1[Order delivered]
         Q[Confirm Payment]
     end
 
@@ -171,8 +173,7 @@ flowchart TD
     end
 
     subgraph Order_Management [Order Management]
-        N[Update Order Status]
-        R[Update Order Status]
+        N[Update order status]
     end
 
     subgraph Email [Email]
@@ -180,20 +181,22 @@ flowchart TD
     end
 
     %% Shipping Flow
-    S --> U
+    S --> S1
+    S1 --> U
     U --> P
+    U --> U1
     
     %% Final Updates
     P --> O
     P --> N
-    P --> |"Cash on Delivery/<br/>In Person"| Q
-    P --> |"Credit/Debit/<br/>Tokenized"| W
+    U1 --> |"Cash on Delivery/<br/>In Person"| Q
+    U1 --> |"Credit/Debit/<br/>Tokenized"| W
     Q --> W
-    W --> R
+    W --> N
 
     %% Class Assignments
     class S,P,W event;
-    class U,Q fulfill
+    class U,U1,S1,Q fulfill
     class N,R order;
     class O note;
 ```
