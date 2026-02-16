@@ -10,13 +10,9 @@ flowchart TD
     classDef order fill:#fff3e0,stroke:#ef6c00,stroke-width:1px;
     classDef note fill:#f9fbe7,stroke:#827717,stroke-width:1px;
 
-    subgraph Order_Payment [Order Payment]
-        D5[Authorize payment]
-    end
-
     subgraph Order_Creation [Order Management]
         A[Customer Places Order] --> A1[Start create order transaction]
-        A1 --> B{Reserve Inventory?}
+        A1 --> B{Reserve Inventory? External call}
         B -->|Out of Stock| C[Return one or more items missing]
         B --> B2[Commit create order in database]
         B2 --> D2{Payment type?}
@@ -25,6 +21,7 @@ flowchart TD
         D5 --> |"Not authorized"| D6[Return payment failed]
         D2 --> |"Asynchronous payment"| E1[Return payment page]
         D1--> D3[Return order confirmed]
+        D2 --> |"Credit/Debit/Tokenized"| D5{Payment authorized? External call}
     end
 
     subgraph Events [Events / Message Bus]
@@ -40,7 +37,6 @@ flowchart TD
     %% Logic to Events
     H --> I
     H1 --> I1
-    D2 --> |"Credit/Debit/Tokenized"| D5
     D1 --> H
     B2 --> H1
 
