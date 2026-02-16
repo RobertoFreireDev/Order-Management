@@ -7,7 +7,7 @@ flowchart TD
     %% Subgraph Styling
     classDef event fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
     classDef logic fill:#f5f5f5,stroke:#333,stroke-width:1px;
-    classDef fulfill fill:#fff3e0,stroke:#ef6c00,stroke-width:1px;
+    classDef order fill:#fff3e0,stroke:#ef6c00,stroke-width:1px;
     classDef note fill:#f9fbe7,stroke:#827717,stroke-width:1px;
 
     subgraph Order_Creation [Order Creation]
@@ -34,6 +34,9 @@ flowchart TD
 
     %% Class Assignments
     class H event;
+    class B,D2 logic;
+    class A,C,D,D1,D3,E1 order;
+    class I note;
 ```
 
 ### Notes:
@@ -49,7 +52,7 @@ flowchart TD
     %% Subgraph Styling
     classDef event fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
     classDef logic fill:#f5f5f5,stroke:#333,stroke-width:1px;
-    classDef fulfill fill:#fff3e0,stroke:#ef6c00,stroke-width:1px;
+    classDef order fill:#fff3e0,stroke:#ef6c00,stroke-width:1px;
     classDef note fill:#f9fbe7,stroke:#827717,stroke-width:1px;
 
     subgraph Order_Payment [Order Payment]
@@ -86,6 +89,9 @@ flowchart TD
 
     %% Class Assignments
     class H,H1,H2 event;
+    class E logic;
+    class A1,G,G1,A2,F order;
+    class I,I1,I2 note;
 ```
 
 ### Notes:
@@ -122,7 +128,7 @@ flowchart TD
 flowchart TD
     %% Subgraph Styling
     classDef event fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
-    classDef fulfill fill:#fff3e0,stroke:#ef6c00,stroke-width:1px;
+    classDef fulfill fill:#f3e5f5,stroke:#7b1fa2,stroke-width:1px;
     classDef note fill:#f9fbe7,stroke:#827717,stroke-width:1px;
 
     subgraph Fulfillment [FULFILLMENT]
@@ -153,7 +159,7 @@ flowchart TD
     J --> S
 
     %% Class Assignments
-    class M,S event;
+    class H,M,S event;
     class K,L,V fulfill;
     class J note;
 ```
@@ -164,7 +170,9 @@ flowchart TD
 flowchart TD
     %% Subgraph Styling
     classDef event fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
-    classDef fulfill fill:#fff3e0,stroke:#ef6c00,stroke-width:1px;
+    classDef order fill:#fff3e0,stroke:#ef6c00,stroke-width:1px;
+    classDef fulfill fill:#f3e5f5,stroke:#7b1fa2,stroke-width:1px;
+    classDef note fill:#f9fbe7,stroke:#827717,stroke-width:1px;
 
     subgraph Fulfillment [FULFILLMENT]
         U[Ship order]
@@ -199,6 +207,8 @@ flowchart TD
     W --> R
 
     %% Class Assignments
-    class P,W event;
-    class U,Q fulfill;
+    class S,P,W event;
+    class U,Q fulfill
+    class N,R order;
+    class O note;
 ```
