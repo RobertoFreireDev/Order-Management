@@ -67,7 +67,11 @@ flowchart TD
     classDef note fill:#f9fbe7,stroke:#827717,stroke-width:1px;
 
     subgraph Order_Payment [Order Payment]
-        A1[Pay Order] --> |"Credit/Debit/Tokenized"| E{Authorize Payment}
+        A1[Pay Order] --> B{Valid and Credit/Debit/Tokenized?}
+        B --> |"Yes"| E
+        B --> |"Expired"| C[Return payment expired]
+        B --> |"Invalid payment"| C1[Return invalid payment]
+        E{Authorize Payment}
         E -->|Failed| G1[Return Payment Failed/<br/>Try again]
     end
 
@@ -106,38 +110,11 @@ flowchart TD
 
     %% Class Assignments
     class H,H1,H2,H3 event;
-    class E logic;
-    class A1,G,G1,A2,F order;
+    class E,B logic;
+    class A1,C,C1,G,G1,A2,F order;
     class I,I1,I2 note;
 ```
 
-### Notes:
-
-1 - Order Status:
-
-- It should have 2 status columns: Order Status and Payment Status.
-
-1.1 - Digital Payment Flow
-
-| Order Status       | Payment Status     | Trigger / Event                                                                 |
-|--------------------|--------------------|----------------------------------------------------------------------------------|
-| Pending            | Pending            | Order created; inventory reserved; redirecting to payment gateway.             |
-| Awaiting Payment   | Authorized         | Card verified, but funds not yet captured (common in e-commerce).              |
-| Confirmed          | Paid               | Payment confirmed by the bank or gateway.                                       |
-| Canceled           | Failed             | Card declined or user abandoned the session.                                    |
-| Canceled           | Expired            | Payment window timed out.                              |
-| Canceled           | Refunded           | Order canceled by user/admin after payment was successful.                      |
-
----
-
-1.2 - Order Lifecycle – Cash / Pay-on-Delivery Flow
-
-| Order Status       | Payment Status | Trigger / Event                                                      |
-|--------------------|---------------|----------------------------------------------------------------------|
-| Confirmed          | Pending       | Order confirmed; no digital payment needed to start fulfillment.      |
-| Out for Delivery   | Pending       | Logistics has the package; payment expected at delivery.           |
-| Completed          | Paid          | Delivery person confirms receipt of cash/card in person.           |
-| Canceled           | Unpaid        | Customer refused delivery or was not found at the address.         |
 
 ## Fulfillment
 
