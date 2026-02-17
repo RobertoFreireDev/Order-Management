@@ -50,9 +50,21 @@ flowchart TD
 
 ### Notes:
 
-1 - Reserve/Lock Inventory:
+1 - Race conditions:
+ 
+1.1 - At database level
+
+Example: Reserve/Lock Inventory.
 
 - It should be an atomic operation at database level to avoid race conditions between multiple users in the same or on different application instances on the server/cloud.
+
+1.2 - At application level
+
+Example: Distributed Lock.
+
+- If two or more consumers read the same event simultaneously and a call is made to an external API—such as a Payment Gateway—that does not support database transactions, a Distributed Lock should be implemented. Using a tool like Redis (which is faster than a traditional database) ensures that multiple instances of a consumer do not attempt to process the same event at the exact same time.
+
+![alt text](imgs/distributedlock.png)
 
 2 - Transactional outbox pattern
 
@@ -68,13 +80,7 @@ flowchart TD
 
 ![idempotency](imgs/idempotency.png)
 
-4 - Distributed Lock:
-
-If two or more consumers read the same event simultaneously (a race condition) and a call is made to an external API—such as a Payment Gateway—that does not support database transactions, a Distributed Lock should be implemented. Using a tool like Redis (which is typically faster than a traditional database for this purpose) ensures that multiple instances of a consumer do not attempt to process the same event at the exact same time.
-
-![alt text](imgs/distributedlock.png)
-
-5 - Synchronous/Async payment methods:
+4 - Synchronous/Async payment methods:
 
 - Direct authorization via http request
 - Authorize payment request via webhook or polling.
