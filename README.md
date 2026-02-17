@@ -75,7 +75,7 @@ Example: Distributed Lock.
 
 3 - Idempotency on the consumer side
 
-- One solution is to store the fact that event has been processed. So, next time, if the same event is triggered, the consumer will acknowledge it but not process. The consumer will silently ignore it. You will need a idempotency key (either hash the event payload or use the orderid) and store it in the database. Remember that the ProcessedEvents table will grow indefinitely. Implement a TTL (Time-to-Live) or a background job to delete records older than 7–30 days.
+- One solution is to store the fact that event has been processed. So, next time, if the same event is triggered, the consumer will acknowledge it but not process. The consumer will silently ignore it. You will need a idempotency key (either hash the event payload or use the orderid) and store it in the database. Remember that the ProcessedEvents table will grow indefinitely. Implement a TTL (Time-to-Live) or a background job to delete records older than X number of days.
 - Another solution is to design the consumer-side operation itself to be idempotent, if possible. This ensures that duplicate events result in the same final state. Example: UPDATE Orders SET Status = 'Processed' WHERE OrderId = 123 AND Status = 'Pending'.
 
 ![idempotency](imgs/idempotency.png)
