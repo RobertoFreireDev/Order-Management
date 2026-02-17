@@ -57,9 +57,16 @@ flowchart TD
 2 - Transactional outbox pattern
 
 - All the events sent should follow this pattern.
-- Example: Save both order details and order created (outbox message) to the same database in a single transaction. A separate and decoupled process reads from the outbox table and publishes to a message broker and then it deletes the current outbox message. Still has a very small chance to not be able to delete outbox message and send more than 1 order created event to message bus. Need to implement Idempotency on the consumer side.
+- Example: Save both order details and order created (outbox message) to the same database in a single transaction. A separate and decoupled process reads from the outbox table and publishes to a message broker and then it deletes the current outbox message. There is a very small chance that after a event being publish, for some reason (application is down, for example), the outbox message was not deleted. Thus, a duplicated order created event will be sent to message bus. To avoid this, we must implement Idempotency on the consumer side.
 
 ![Transactional outbox pattern](imgs/outboxpattern.png)
+
+3 - Idempotency on the consumer side
+
+- One solution is to store the fact that event has been processed. So, next time, if the same event is triggered, it will be acknowledge but no processed (Silently ignore it). You can hash the event payload and store in the database or use orderid as an unique idempotency key.
+- Another solution, if possible, is to make the operation on the consumer side, idempotent. This way, the following duplicated events will result the same output. Example: UPDATE Orders SET Status = 'Processed' WHERE OrderId = 123 AND Status = 'Pending'.
+
+![idempotency](imgs/idempotency.png)
 
 3 - Synchronous/Async payment methods:
 
