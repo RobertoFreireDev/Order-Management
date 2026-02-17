@@ -63,12 +63,18 @@ flowchart TD
 
 3 - Idempotency on the consumer side
 
-- One solution is to store the fact that event has been processed. So, next time, if the same event is triggered, it will be acknowledge but no processed (Silently ignore it). You can hash the event payload and store in the database or use orderid as an unique idempotency key.
-- Another solution, if possible, is to make the operation on the consumer side, idempotent. This way, the following duplicated events will result the same output. Example: UPDATE Orders SET Status = 'Processed' WHERE OrderId = 123 AND Status = 'Pending'.
+- One solution is to store the fact that event has been processed. So, next time, if the same event is triggered, the consumer will acknowledge it but not process. The consumer will silently ignore it. You will need a idempotency key (either hash the event payload or use the orderid) and store it in the database. Remember that the ProcessedEvents table will grow indefinitely. Implement a TTL (Time-to-Live) or a background job to delete records older than 7–30 days.
+- Another solution is to design the consumer-side operation itself to be idempotent, if possible. This ensures that duplicate events result in the same final state. Example: UPDATE Orders SET Status = 'Processed' WHERE OrderId = 123 AND Status = 'Pending'.
 
 ![idempotency](imgs/idempotency.png)
 
-3 - Synchronous/Async payment methods:
+4 - Distributed Lock:
+
+If two or more consumers read the same event simultaneously (a race condition) and a call is made to an external API—such as a Payment Gateway—that does not support database transactions, a Distributed Lock should be implemented. Using a tool like Redis (which is typically faster than a traditional database for this purpose) ensures that multiple instances of a consumer do not attempt to process the same event at the exact same time.
+
+![alt text](imgs/distributedlock.png)
+
+5 - Synchronous/Async payment methods:
 
 - Direct authorization via http request
 - Authorize payment request via webhook or polling.
